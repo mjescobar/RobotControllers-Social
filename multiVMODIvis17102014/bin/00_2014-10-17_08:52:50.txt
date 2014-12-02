@@ -1,1 +1,0 @@
-posx,posy,ang
