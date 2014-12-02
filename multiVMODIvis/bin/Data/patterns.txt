@@ -1,0 +1,10 @@
+patterns/01_b50p01mat.patt
+patterns/01_b50p02mat.patt
+patterns/01_b50p03mat.patt
+patterns/01_b50p04mat.patt
+patterns/01_b50p05mat.patt
+patterns/01_b50p06mat.patt
+patterns/01_b50p07mat.patt
+patterns/01_b50p08mat.patt
+patterns/01_b50p09mat.patt
+patterns/01_b50p10mat.patt

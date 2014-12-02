@@ -1,0 +1,6 @@
+scenarios/boundingrectHD_small.bmp
+scenarios/shape01.bmp
+0013A2004091A187 patterns/01_b50p01mat.patt
+0013A20040AA19D2 patterns/01_b50p02mat.patt
+0013A20040A8BE3E patterns/01_b50p04mat.patt
+0013A2004091A31B patterns/01_b50p03mat.patt
