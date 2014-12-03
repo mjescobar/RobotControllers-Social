@@ -96,9 +96,13 @@
 #define CW 1
 #define CCW 0
 
-#define ANY_OBJ     -2
-#define ANY_MODI    -2
-#define NO_MODI     -1
+#define ANY_MODI      -2
+#define NO_MODI       -1
+
+#define ALL_BUT_ZERO  -3
+#define ANY_OBJ       -2
+#define NO_OBJ        -1
+
 
 
 #ifndef DEFS_H_INCLUDED

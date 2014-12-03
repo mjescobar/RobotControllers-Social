@@ -797,3 +797,53 @@
 1414442312 source:/home/fabianrubilar/Documents/CURRENT_ARCHITECTURE/modiServer27102014/serverData.cpp
 	"serverData.h"
 
+1408851517 source:/media/Datos/FABIAN/ARCHITECTURE/modiServer/comm_utils.cpp
+	"comm_utils.h"
+
+1408912809 /media/Datos/FABIAN/ARCHITECTURE/modiServer/comm_utils.h
+	<semaphore.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<unistd.h>
+	<sys/socket.h>
+	<sys/time.h>
+	<netinet/in.h>
+	<string.h>
+	<stdlib.h>
+	<stdio.h>
+	<arpa/inet.h>
+	<pthread.h>
+	<fcntl.h>
+	<netinet/in.h>
+	<netdb.h>
+	<cstdio>
+	<vector>
+
+1410404966 source:/media/Datos/FABIAN/ARCHITECTURE/modiServer/main.cpp
+	"serverData.h"
+
+1410404582 /media/Datos/FABIAN/ARCHITECTURE/modiServer/serverData.h
+	"smodi.h"
+	"comm_utils.h"
+
+1417623701 /media/Datos/FABIAN/ARCHITECTURE/modiServer/smodi.h
+	<sys/types.h>
+	<sys/ipc.h>
+	<sys/shm.h>
+	"surf_wrapper.h"
+
+1409537014 /media/Datos/FABIAN/ARCHITECTURE/modiServer/surf_wrapper.h
+	"SDL.h"
+	<cmath>
+
+1414442312 source:/media/Datos/FABIAN/ARCHITECTURE/modiServer/serverData.cpp
+	"serverData.h"
+
+1410203643 source:/media/Datos/FABIAN/ARCHITECTURE/modiServer/smodi.cpp
+	"smodi.h"
+	"math.h"
+	<stdlib.h>
+
+1409523222 source:/media/Datos/FABIAN/ARCHITECTURE/modiServer/surf_wrapper.cpp
+	"surf_wrapper.h"
+

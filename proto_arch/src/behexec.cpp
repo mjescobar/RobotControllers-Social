@@ -275,8 +275,12 @@ void behexec::f_reach_obj()
 {
     int cState = s_reach_obj.cState;
     int obj2detect = s_reach_obj.obj2detect;
+    if(obj2detect==NO_OBJ)
+        return;
+    if(obj2detect==ALL_BUT_ZERO)
+        obj2detect = 0;
     float target_error, distance, speed, error_fact;
-    if(obj2detect==ANY_OBJ) cState = 1;
+    float mindist = 2*FAR_DIST;
     switch(cState)
     {
     case 0:
@@ -284,17 +288,28 @@ void behexec::f_reach_obj()
         cState = 2;
         break;
     case 1:
-        for(int i=0; i< MAX_OBJECTS; i++)
-            if(rob->o_pos[i].m>=0)
-            {
-                s_reach_obj.obj2detect = i;
-                break;
-            }
-        s_reach_obj.original_spd = default_speed;
-        cState = 2;
+        // currently, there's no case 1.
         break;
     case 2:
         /* alignment */
+        if(obj2detect==ANY_OBJ)
+        {
+            for(int i=0; i< MAX_OBJECTS; i++)
+                if(rob->o_pos[i].m>=0)
+                {
+                    if(rob->o_pos[i].m<=mindist)
+                    {
+                        mindist = rob->o_pos[i].m;
+                        obj2detect = i;
+                    }
+                }
+        s_reach_obj.original_spd = default_speed;
+        }
+        if(obj2detect==ANY_MODI)
+        {
+            setVel(0.0,0.0);
+            break;
+        };
         target_error = rob->o_pos[obj2detect].a;
         distance = rob->o_pos[obj2detect].m;
         speed = s_reach_obj.original_spd;
@@ -309,10 +324,8 @@ void behexec::f_reach_obj()
         else
             setVel((speed),(-1.0)*(speed));
         if(distance <= COL_DIST)
-            cState = 3;
+            setVel(0,0);
         break;
-    case 3:
-        setVel(0,0);
     }
     s_reach_obj.cState = cState;
     hold_behavior = NO_BEHAVIOR;
@@ -322,9 +335,11 @@ void behexec::f_evade_obj()
 {
     int cState = s_evade_obj.cState;
     int obj2detect = s_evade_obj.obj2detect;
+    if(obj2detect==NO_OBJ)
+        return;
     float target_error, distance, speed, error_fact;
-    if(obj2detect==ANY_OBJ) cState = 1;
-    //printf("%d\n",cState);
+    int ii = 0;
+    float mindist = 2*FAR_DIST;
     switch(cState)
     {
     case 0:
@@ -332,22 +347,34 @@ void behexec::f_evade_obj()
         cState = 2;
         break;
     case 1:
-        for(int i=0; i< MAX_OBJECTS; i++)
-            if(rob->o_pos[i].m>=0)
-            {
-                s_evade_obj.obj2detect = i;
-                break;
-            }
-        s_evade_obj.original_spd = default_speed;
-        cState = 2;
+        // currently, there's no case 1.
         break;
     case 2:
-        /* alignment */
+            /* alignment */
+        if(obj2detect==ANY_OBJ||obj2detect==ALL_BUT_ZERO)
+        {
+            if(obj2detect==ALL_BUT_ZERO) ii = 1;
+            for(int i=ii; i< MAX_OBJECTS; i++)
+                if(rob->o_pos[i].m>=0)
+                {
+                    if(rob->o_pos[i].m<=mindist)
+                    {
+                        mindist = rob->o_pos[i].m;
+                        obj2detect = i;
+                    }
+                }
+        s_evade_obj.original_spd = default_speed;
+        }
+        if(obj2detect==ANY_MODI)
+        {
+            setVel(0.0,0.0);
+            break;
+        };
         target_error = valid_angle(rob->o_pos[obj2detect].a+180.0);
         distance = rob->o_pos[obj2detect].m;
         if((distance <0)||(distance >= FAR_DIST))
         {
-            cState = 3;
+            setVel(0,0);
             break;
         }
         speed = s_evade_obj.original_spd;
@@ -365,14 +392,12 @@ void behexec::f_evade_obj()
             else
             {
                 if(rob->senl>rob->senr)
-                    setVel(0.9*(speed),(-1.0)*(speed));
+                    setVel(0.8*(speed),(-1.0)*(speed));
                 else
-                    setVel((speed),0.9*(-1.0)*(speed));
+                    setVel((speed),0.8*(-1.0)*(speed));
             }
         }
         break;
-    case 3:
-        setVel(default_speed,default_speed);
     }
     s_evade_obj.cState = cState;
     hold_behavior = NO_BEHAVIOR;
@@ -382,10 +407,12 @@ void behexec::f_modi_follow()
 {
     int cState = s_modi_follow.cState;
     int modi2detect = s_modi_follow.modi2detect;
+    if(modi2detect==NO_MODI)
+        return;
     float prev_dist = s_modi_follow.prev_dist;
     float distance = -1;
     float target_error, speed, error_fact;
-    if(modi2detect==ANY_MODI) cState = 1;
+    float mindist = 2*FAR_DIST;
     switch(cState)
     {
     case 0:
@@ -393,35 +420,33 @@ void behexec::f_modi_follow()
         cState = 2;
         break;
     case 1:
-        for(int i=0; i< MAX_OBJECTS; i++)
-            if((rob->m_pos[i].m>=0)&&i!=rob->id)
-            {
-                s_modi_follow.modi2detect = i;
-                break;
-            }
-        s_modi_follow.original_spd = default_speed;
-        cState = 2;
+        // currently, there's no case 1.
         break;
     case 2:
         /* alignment */
-        if(modi2detect==NO_MODI)
+        if(modi2detect==ANY_MODI)
         {
-            target_error = 0.0;
-            distance = 0.0;
-            //printf("%d, %d\n",rob->id,modi2detect);
+            for(int i=0; i< MAX_OBJECTS; i++)
+                if((rob->m_pos[i].m>=0)&&i!=rob->id)
+                {
+                    if(rob->m_pos[i].m<=mindist)
+                    {
+                        mindist = rob->m_pos[i].m;
+                        modi2detect = i;
+                    }
+                }
+        s_modi_follow.original_spd = default_speed;
         }
-        else
-        {
-            target_error = rob->m_pos[modi2detect].a;
-            distance = rob->m_pos[modi2detect].m;
-        }
+        if(modi2detect==ANY_MODI) modi2detect = rob->id;
+        target_error = rob->m_pos[modi2detect].a;
+        distance = rob->m_pos[modi2detect].m;
         if(distance <0)
         {
             setVel(0.0,0.0);
             break;
         }
         speed = s_reach_obj.original_spd;
-        //printf("\t%f,%f\n",target_error,distance);
+        //printf("\tmfol: %d, %f,%f\n",modi2detect,target_error,distance);
         /* magnitude according to the distance */
         speed = 10*(distance-MODI_FOLLOW_DIST)*default_speed+MIN_SPD;
         speed = speed > MAX_SPD ? MAX_SPD : speed;
@@ -432,7 +457,7 @@ void behexec::f_modi_follow()
         else if(target_error<(-1*error_fact*ANGLE_ERROR))
             setVel((speed*(1+2*target_error/180.0)),(-1.0)*(speed*(1-target_error/180.0)));
         else
-            setVel(-1.0*(speed),(speed));
+            setVel((speed),-1.0*(speed));
         break;
         if(distance<=MODI_FOLLOW_DIST)
         {

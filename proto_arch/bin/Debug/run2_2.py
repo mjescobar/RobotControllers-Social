@@ -10,11 +10,11 @@ delay = 2
 protoarch = " ./proto_arch "
 echo = " echo "
 
-experiment_name = "exp2_2"
-dummybot = "-mo -1.0 -delay 2 -mfol -2 -ofol 0 -mow 0.9 1.0 0.0 "
-dummyname = "_-1.0_0.9_1.0_0.0"
-testbot = dummybot
-testname = dummyname
+experiment_name = "exp2_2"				#mo bf eo
+dummybot = "-mo -1.0 -delay 2 -mfol -1 -ofol 0 -mow 0.9 0.5 0.5 "
+dummyname = "_-1.0_0.9_0.5_0.5"
+testbot = "-mo -1.0 -delay 2 -mfol -1 -ofol 0 -mow 0.9 0.5 0.5 "
+testname = "_-1.0_0.9_0.5_0.5"
 
 for i in range(repeats):
 	# start the simulator

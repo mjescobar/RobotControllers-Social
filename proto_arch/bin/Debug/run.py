@@ -6,15 +6,15 @@ import numpy as np
 repeats = 50
 robots = [0,1,2]
 mos = [-1.0,1.0]
-w_mos = [0.7,0.992] #,0.995]
+w_mos = 0.9 #[0.7,0.992] #,0.995]
 w_bfs = np.linspace(0.0,1,3) #5);
 w_eos = np.linspace(0.0,1,3) #5);
-limit = 10000
+limit = 6000
 delay = 2
-mo = 1.0
-modi2follow = 0
-obj2follow = 0
-beh2exec = -1
+
+modi2follow = -1
+obj2follow = -1
+
 protoarch = " ./proto_arch "
 echo = " echo "
 
@@ -28,15 +28,8 @@ echo = " echo "
 #dummyname = "_-1.0_0.7_0.5_0.5"
 
 experiment_name = "SOE_03"
-dummybot = "-mo -1.0 -delay 2 -mfol  -2 -ofol 0 -mow 0.992 0.5 0.5 "
-dummyname = "_-1.0_0.992_0.5_0.5"
-
-
-d_mos = [-1.0,1.0]
-d_w_mos = [0.7,0.992]
-d_w_bfs = [0.0,0.5,1];
-d_w_eos = [0.0,0.5,1];
-
+dummybot = "-mo -1.0 -delay 2 -mfol  -2 -ofol -1 -mow 0.9 0.5 0.5 "
+dummyname = "_-1.0_0.9_0.5_0.5"
 
 for mo in mos:
 	for w_mo in w_mos:

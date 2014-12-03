@@ -4,16 +4,16 @@ import numpy as np
 
 repeats = 50
 robots = [0,1,2]
-limit = 10000
+limit = 6000
 delay = 2
 
 protoarch = " ./proto_arch "
 echo = " echo "
 
-experiment_name = "exp2_3"				#mo bf eo
-dummybot = "-mo -1.0 -delay 2 -mfol 0 -ofol 0 -mow 0.9 0.5 0.5 "
-dummyname = "_-1.0_0.9_0.5_0.5"
-testbot = "-mo -1.0 -delay 2 -mfol -1 -ofol 0 -mow 0.9 0.5 0.5 "
+experiment_name = "exp1_2"				#mo bf eo
+dummybot = "-mo -1.0 -delay 2 -mfol -2 -ofol -1 -mow 0.9 0.0 1.0 "
+dummyname = "_-1.0_0.9_0.0_0.1"
+testbot = dummybot
 testname = dummyname
 
 for i in range(repeats):

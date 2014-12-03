@@ -146,4 +146,18 @@ void perception::update(float MO)
               break;
             }
         }
+
+    // update external orientation value
+    float tmpEO = 0;
+    float mcount = EPSIL;
+    for(int i=0; i< MAX_MODIES; i++)
+    {
+        if((inref->m_pos[i].m<NEAR_AVOBJD)&&(inref->m_pos[i].m>=0))
+        {
+            tmpEO = tmpEO + inref->mo_sur[i];
+            mcount = mcount + 1;
+        }
+    }
+    EO = tmpEO/mcount;
+    //printf("%f\n",EO);
 }

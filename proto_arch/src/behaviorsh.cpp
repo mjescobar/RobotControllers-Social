@@ -182,6 +182,12 @@ void behaviorsh::update(int *e, float MO, int hold_behavior, int reasonedb, int 
         // any object detected.
         if(e[OBJ_DETECT]) act(FREE_EXP,1.0);
         if(e[OBJ_DETECT]) act(REACH_OBJ,0.1);
+        // if the robot should follow only the obj zero, and evade the rest
+        if(obj2follow==ALL_BUT_ZERO)
+        {
+            if(e[OBJ_DETECT]&(1<<obj2follow)) act(REACH_OBJ,1.0);
+            else act(EVADE_OBJ,1.0);
+        }
         // when the detected object is the right one.
         if(obj2follow>=0)
         {
@@ -220,6 +226,12 @@ void behaviorsh::update(int *e, float MO, int hold_behavior, int reasonedb, int 
         // any object detected.
         if(e[OBJ_DETECT]) act(EVADE_OBJ,1.0);
         if(e[OBJ_DETECT]) act(WALL_FOLLOW,1.0);
+        // if the robot should follow only the obj zero, and evade the rest
+        if(obj2follow==ALL_BUT_ZERO)
+        {
+            if(e[OBJ_DETECT]&(1<<obj2follow)) act(REACH_OBJ,1.0);
+            else act(EVADE_OBJ,1.0);
+        }
         // when the detected object is the right one.
         if(obj2follow>=0)
         {
