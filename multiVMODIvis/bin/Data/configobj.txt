@@ -1,0 +1,3 @@
+scenarios/shape01.bmp
+patterns/01_b50p09mat.patt
+patterns/01_b50p03mat.patt

@@ -1,0 +1,15 @@
+#! /bin/bash
+python run2_1.py
+python run2_2.py
+python run2_3.py
+#python run3_1.py
+#python run3_2.py
+#python run2_1_1.py
+#python run2_2_1.py
+#python run2_3_1.py
+#python run2_1_2.py
+#python run2_2_2.py
+#python run2_3_2.py
+#python run2_1_3.py
+#python run2_2_3.py
+#python run2_3_3.py
