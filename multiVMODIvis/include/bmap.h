@@ -1,8 +1,12 @@
 /* define these constants to activate the respective functions */
-// #define DO_COMM          // if you want to perform the xbee communication with the robot
+#define DO_COMM            // if you want to perform the xbee communication with the robot
 // #define DO_REPORT        // if you want to write in a file the position of the robot
 // #define USE_SENSORS      // if you want to use, update and draw the sensors.
                             // it also change the declaration of mDataf.
+#define PPCMX 7.982
+#define PPCMY 8.0699
+#define PI 3.141592654
+#define SPD_LIMIT 100
 
 #ifndef _BMAP_H_
 #define _BMAP_H_

@@ -222,7 +222,7 @@ int main(int argc, char** argv)
         usleep(1000000);
     }
 
-    printf("\nsimulation started!\n");
+    printf("\nsimulation started! - ver 16122014\n");
 
     /*  MAIN LOOP */
 
@@ -242,9 +242,10 @@ int main(int argc, char** argv)
     int div = limit/100;
 
     char semname[6];
+    printf("opening sem...\n");
     sprintf(semname,"sem%02d",atoi(c_idx));
     sem_t *exesem = sem_open(semname,0);
-    if(exesem==SEM_FAILED)
+    if(exesem==SEM_FAILED||exesem==NULL)
         printf("error!");
     else
         printf(" semaphore %s was opened.\n",semname);
@@ -261,21 +262,30 @@ int main(int argc, char** argv)
         perc.update(mobl.GetMO());
 
         // update the motivational orientation
-        // NOTE: A HOLDED BEHAVIOR WILL UPDATE THE MO ANYWAYS
+        // NOTE: A HELD BEHAVIOR WILL UPDATE THE MO ANYWAYS
         // GOOD OR BAD? THAT'S THE QUESTION.
 
-        mobl.update(&r1, perc.GetEO(),besh.GetBF(),0.0/*RO*/);
+        mobl.update(&r1,besh.GetBF(), perc.GetEO(),0.0/*RO*/);
 
         /* update the behavioral schemata */
         besh.update(perc.getEvents(),mobl.GetMO(),NO_BEHAVIOR,-1/*intending*/,modi2follow,obj2follow);
 
         // execute the current behavior
         if(c_beh!=NULL)
+        {
             executor.update(atoi(c_beh));
+            //printf("executing ");
+            //prt_beh(atoi(c_beh));
+        }
         else
             executor.update(besh.GetBehavior());
         //executor.update(0);
-
+        /*
+        if(besh.GetBehavior()==MODI_FOLLOW)
+        {
+            printf("here!%d\n",MODI_FOLLOW);
+        }
+        */
         if(csv_make)
         {
             prt_all(csv_file,r1,perc.GetEO(),perc.getEvents(),besh.GetBehavior());
@@ -283,7 +293,7 @@ int main(int argc, char** argv)
         else
         {
             prt_ModiSen(r1);
-            prt_beh(besh.GetBehavior());
+            //prt_beh(besh.GetBehavior());
         }
         executor.upd_motor_and_mo_to_shm(besh.GetBF());
         //usleep(20000);

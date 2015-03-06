@@ -13,14 +13,14 @@ class motiv
         void update(ModiSen* rob,float inBF, float inEO, float inRO);
         void reset(float initval,float *inweights);
         void SetWeight(int which, float value) { weights[which] = value;}
-        float GetRO() { return factors[1]; }
-        void SetRO(float val) { factors[1] = val; }
-        float GetBF() { return factors[2]; }
-        void SetBF(float val) { factors[2] = val; }
+        float GetRO() { return factors[M_RO]; }
+        void SetRO(float val) { factors[M_RO] = val; }
+        float GetBF() { return factors[M_BF]; }
+        void SetBF(float val) { factors[M_BF] = val; }
         float GetMO(bool updated = false);
-        void SetMO(float val) { factors[0] = val; }
-        float GetEO() { return factors[3]; }
-        void SetEO(float val) { factors[3] = val; }
+        void SetMO(float val) { factors[M_MO] = val; }
+        float GetEO() { return factors[M_EO]; }
+        void SetEO(float val) { factors[M_EO] = val; }
     protected:
     private:
         float w_norm;

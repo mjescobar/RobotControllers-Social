@@ -21,12 +21,14 @@
 #include <fcntl.h>
 #include <xbee.h>
 #include <string.h>
-#include "modi.h"
+//#include "modi.h"
+#include "object.h"
 
 #include <pthread.h>
 
 #define MAXMODIES 10
-#define FRAMES_PER_COM 4
+#define MAXOBJECTS 10
+#define FRAMES_PER_COM 2
 
 typedef struct xbee_conAddress xbeeAddr;
 typedef struct xbee_con xbeecon;
@@ -61,10 +63,11 @@ unsigned char *pframe;
 
 char scenario[200];
 char modishape[200];
+char objshape[200];
 
 // artoolkit functions
 
-static void   init(char * bmpName, char *outFile);
+static void   init(char * conf1Name, char * conf2Name, char *outFile);
 static void   cleanup(void);
 static void   keyEvent( unsigned char key, int x, int y);
 static void   mainLoop(void);
@@ -78,6 +81,11 @@ std::string patterns[MAXMODIES];
 int shkeys[MAXMODIES*2];
 //  number of modies created
 int modinum = 0;
+
+// objects
+object objects[MAXOBJECTS];
+std::string obj_patterns[MAXOBJECTS];
+int objnum = 0;
 
 xbeeAddr addresses[MAXMODIES];
 unsigned char* instructions[MAXMODIES];
@@ -97,7 +105,10 @@ pthread_t commthread;
 int cont;
 
 // time marks
-  clock_t begin, end;  float time_spent;
+clock_t begin, end;  float time_spent;
+
+
+static pthread_t tid;
 
 // obtains the angle of a certain fiducial
 double object_angle(double (*source)[4],double *pos)
@@ -109,7 +120,7 @@ double object_angle(double (*source)[4],double *pos)
     arUtilMat2QuatPos(source, rot_quat, pos);
     arUtilMatInv(source,inv);
     arUtilMat2QuatPos(inv, rot_quat, dummy3);
-    sign = ((rot_quat[0]*rot_quat[1])>0)? -1 : 1;
+    sign = ((rot_quat[0]*rot_quat[1])>0)? 1 : -1;
     angle = sign*(rot_quat[1]*rot_quat[1])*180;
     return angle;
 }
@@ -189,7 +200,7 @@ void setInstruction(unsigned char* array,uchar mode, uchar opt, uchar motorl, uc
     array[0] = mode;
     array[1] = opt;
     array[2] = motorr;
-    array[4] = motorl;
+    array[3] = motorl;
 }
 #endif // DO_COMM
 
@@ -227,6 +238,33 @@ int readModiConfig(char * filename)
     return 0;
 }
 
+int readObjConfig(char * filename)
+{
+    FILE *infile;
+    infile = fopen(filename,"r");
+    int head = 1;
+
+    while(!feof(infile))
+    {
+        char strs[80];
+        if(head)
+        {
+            if(fscanf(infile,"%s",objshape)<0) return -1;
+            head = 0;
+        }
+        else
+        {
+            if(fscanf(infile,"%s",strs)<0)
+            {
+                if(objnum==0)  return -1;
+                else return 0;
+            }
+            obj_patterns[objnum] = std::string(strs);
+            objnum++;
+        }
+    }
+    return 0;
+}
 #endif
 
 

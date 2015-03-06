@@ -7,7 +7,7 @@
 #define DEFAULT_RANGE 100
 #define DEFAULT_SPEED 60
 // kalman filter strength
-#define FQR 0.3
+#define FQR 0.6
 
 #define FRM_FLAG 1
 #define COM_FLAG 2
@@ -71,6 +71,9 @@ modi::modi()
     delta_thp = 0;
     thpp = 0;
     Kk = 0;
+
+    scmd = (unsigned char*) malloc(sizeof(unsigned char)*4);
+    memset(scmd,0x00,sizeof(unsigned char)*4);
 }
 modi::modi(int inoffx, int inoffy, int inrange)
 {
@@ -113,6 +116,7 @@ modi::modi(int inoffx, int inoffy, int inrange)
     patt_id = 0;
     k_index = 0;
     cf = 0;
+    data.id = patt_id;
 
     pfile = NULL;
 
@@ -128,6 +132,9 @@ modi::modi(int inoffx, int inoffy, int inrange)
     delta_thp = 0;
     thpp = 0;
     Kk = 0;
+
+    scmd = (unsigned char*) malloc(sizeof(unsigned char)*4);
+    memset(scmd,0x00,sizeof(unsigned char)*4);
 }
 modi::modi(int inoffx, int inoffy, int inrange,int inpatt_id)
 {
@@ -167,6 +174,7 @@ modi::modi(int inoffx, int inoffy, int inrange,int inpatt_id)
     }
     #endif // USE_SENSORS
     patt_id = inpatt_id;
+    data.id = patt_id;
     k_index = 0;
     cf = 0;
 
@@ -186,6 +194,9 @@ modi::modi(int inoffx, int inoffy, int inrange,int inpatt_id)
     delta_thp = 0;
     thpp = 0;
     Kk = 0;
+
+    scmd = (unsigned char*) malloc(sizeof(unsigned char)*4);
+    memset(scmd,0x00,sizeof(unsigned char)*4);
 }
 #ifdef USE_SENSORS
 // updates the pixels which are inside the range of the sensors
@@ -288,16 +299,16 @@ void modi::updTraceLogger()
 #ifdef USE_SENSORS
 void modi::report(bool copy2file)
 {
-    printf("modi %02d: x:%d, y:%d, cf:%lf, kidx: %d, a:%f, sl:%d, sc: %d, sr: %d, speed:%d\n",patt_id,data.pos.x, data.pos.y, cf, k_index, data.angl, px2cm(data.senl), px2cm(data.senc), px2cm(data.senr),data.speed);
+    printf("modi %02d: x:%d, y:%d, cf:%lf, kidx: %d, a:%f, sl:%d, sc: %d, sr: %d, speed:%d\n",patt_id,data.pos.x/(PPCM*100), data.pos.y/(PPCM*100), cf, k_index, data.angl, px2cm(data.senl), px2cm(data.senc), px2cm(data.senr),data.speed);
     if(copy2file)
-        if(pfile!=NULL) fprintf(pfile, "%d,%d,%f,%d,%d,%d,%d\n",data.pos.x, data.pos.y, data.angl, data.senc, data.senc,data.senr,data.speed);
+        if(pfile!=NULL) fprintf(pfile, "%d,%d,%f,%d,%d,%d,%d\n",data.pos.x/(PPCM*100), data.pos.y/(PPCM*100), data.angl, data.senc, data.senc,data.senr,data.speed);
 }
 #else
 void modi::report(bool copy2file)
 {
-    printf("modi %02d: x:%f, y:%f, cf:%lf, kidx: %d, a:%f\n",patt_id,data.pos.x, data.pos.y, cf, k_index, data.pos.a);
+    printf("modi %02d: x:%f, y:%f, cf:%lf, kidx: %d, a:%f\n",patt_id,data.pos.x/(PPCMX*100), data.pos.y/(PPCMY*100), cf, k_index, data.pos.a);
     if(copy2file)
-        if(pfile!=NULL) fprintf(pfile, "%f,%f,%f\n",data.pos.x, data.pos.y, data.pos.a);
+        if(pfile!=NULL) fprintf(pfile, "%f,%f,%f\n",data.pos.x/(PPCMX*100), data.pos.y/(PPCMY*100), data.pos.a);
 }
 #endif
 // set values into an image. value is an array of three uchar values
@@ -464,4 +475,89 @@ void modi::setcmd(unsigned char *input)
     input[1] = scmd[1];
     input[2] = scmd[2];
     input[3] = scmd[3];
+}
+
+
+
+void modi::update_act(float ml, float mr, float id)
+{
+    int pmotl = (int) (100.0*ml/(1.5*PI));
+    int pmotr = (int) (100.0*mr/(1.5*PI));
+    pmotl =     (pmotl>SPD_LIMIT)? SPD_LIMIT :
+                (pmotl<-1*SPD_LIMIT)? -1*SPD_LIMIT : pmotl;
+    pmotr =     (pmotr>SPD_LIMIT)? SPD_LIMIT :
+                (pmotr<-1*SPD_LIMIT)? -1*SPD_LIMIT : pmotr;
+    motl = (char) (pmotl>=0)? pmotl : -1*pmotl;
+    motr = (char) (pmotr>=0)? pmotr : -1*pmotr;
+    data.id = (int) id;
+
+    scmd[0] = 0x02;
+    scmd[1] =   (ml<0.0&&mr<0.0)?    0x00 :
+                (ml<0.0&&mr>=0.0)?   0x01 :
+                (ml>0.0&&mr<=0.0)?   0x02 :
+                0x03;
+    scmd[2] = motr;
+    scmd[3] = motl;
+    printf("id:%.0f, %d, %d,%f,%f\n",id,(int)motl,(int)motr,ml,mr);
+}
+
+void *modi_connection(void *arguments)
+{
+    modi* lmodi = (modi*) arguments;
+   // flushing the console
+    fflush(stdout);
+    ///let the magic begin!
+    int lsockid = lmodi->getSocket();
+    float outdata[3];
+    outdata[0] = lmodi->getpos().x/(PPCMX*100);
+    outdata[1] = lmodi->getpos().y/(PPCMY*100);
+    outdata[2] = lmodi->getpos().a;
+    replyToReceivedData((char*)outdata,sizeof(float)*3, lmodi->getSocket());
+    while(!shutdown_flag)
+    {
+        lmodi->swait();
+        int receivedDataLength;
+        char* receivedData=receiveData(receivedDataLength,lsockid);
+        if (receivedData!=NULL)
+        {
+            // We received data. The server ALWAYS replies!
+            // filling the allmodi_data array
+            lmodi->update_act(((float*)receivedData)[0],-1*((float*)receivedData)[1],((float*)receivedData)[2]);
+            // if(myid==0) simulation_time = ((float*)receivedData)[3];
+            delete[] receivedData;
+            outdata[0] = lmodi->getpos().x/(PPCMX*100)-1.18;
+            outdata[1] = 0.68-lmodi->getpos().y/(PPCMY*100);
+            outdata[2] = lmodi->getpos().a;
+            //if(lmodi->getPattid()<=1) printf("modi %02d: x:%f, y:%f, a:%f\n",lmodi->getPattid(),outdata[0], outdata[1], outdata[2]);
+
+            if (!replyToReceivedData((char*)outdata,sizeof(float)*3,lsockid))
+            {
+                printf("Failed to send reply.\n");
+                break;
+            }
+        }
+        else
+        {
+            printf("null data received. aborting...\n");
+            break; // error
+        }
+    }
+    printf("MODI %d disconnected.\n",lmodi->getPattid());
+    close(lsockid);
+    lmodi->sclose();
+    return NULL;
+}
+
+
+void modi::setSocket(int i,modi *ref)
+{
+    printf("socket %d attached to modi %d.\n",i,patt_id);
+    sockid = i;
+    thrd = pthread_create(&tid,NULL,modi_connection,ref);
+    pthread_detach(tid);
+}
+
+int modi::getSocket()
+{
+    return sockid;
 }

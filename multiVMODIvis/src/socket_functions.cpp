@@ -1,20 +1,31 @@
 #include "socket_functions.h"
 
-int s, port, n;
+int port, n;
 struct sockaddr_in serveraddr;
 struct hostent *server;
 char *hostname;
 
+void reusePort(int s)
+{
+  int one=1;
+
+  if ( setsockopt(s,SOL_SOCKET,SO_REUSEADDR,(char *) &one,sizeof(one)) == -1 )
+  {
+    printf("error in setsockopt,SO_REUSEPORT \n");
+    exit(-1);
+  }
+}
 
 //void start_server(char *hostname_in, int port_in) {
-void start_server() {
+int start_server() {
     // Creacion y configuracion del socket para comunicarse con el servidor
 
     hostname = "127.0.0.1";
-    port = 13450;
+    port = PORTNUMBER;
     printf(" starting...");
     fflush(stdin);
-    s = socket(AF_INET, SOCK_STREAM, 0);
+    int s = socket(AF_INET, SOCK_STREAM, 0);
+    //reusePort(s);
     if ( s < 0 )
         perror("ERROR opening socket");
 
@@ -31,18 +42,17 @@ void start_server() {
     // Estableciendo conexion con el servidor
     if ( connect(s, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0 )
         perror("ERROR connecting");
-
+    return s;
 }
 
-void send_msg(char *msg) {
+void send_msg(int sock, char *msg) {
     // Envio de la opcion ingresada por el usuario
-    n = send(s, msg, sizeof(msg), 0);
+    n = send(sock, msg, sizeof(msg), 0);
     if ( n < 0 )
         perror("ERROR writing to socket");
-
 }
 
-int stop_server() {
+int stop_server(int s) {
     // Cerrar conexion
     close(s);
     return 0;

@@ -41,6 +41,8 @@ int             c_winsize;
 
 /* all the functions below */
 
+// SEMAPHORE-RELATED FUNCTIONS //
+
 void wait_for_sync()
 {
     sem_wait(&sem_reader);
@@ -83,6 +85,11 @@ void wait_for_usage()
     sem_post(&mutex);
     sem_wait(&sem_writer);
 }
+
+////////////////////////////////////
+
+// MODI AND OBJECTS CONNECTION FUNCTIONS. BOTH RUN IN INDIVIDUAL THREADS //
+
 void * modi_connection(void *arguments)
 {
     // getting my own ID
@@ -103,7 +110,6 @@ void * modi_connection(void *arguments)
     while(!shutdown_flag)
     {
         // This is the server loop (the robot's control loop):
-        //sem_wait(&sem_writer);
         int receivedDataLength;
         char* receivedData=receiveData(receivedDataLength,incoming_connection);
         if (receivedData!=NULL)
@@ -125,7 +131,6 @@ void * modi_connection(void *arguments)
                 printf("Failed to send reply.\n");
                 break;
             }
-          //  sem_post(&sem_reader);
             sem_post(exesem);
             wait_for_usage();
 
@@ -196,6 +201,10 @@ void * obj_connection(void *arguments)
     return NULL;
 }
 
+//////////////////////////////////////////////////////////////
+
+//  INITIALIZE THE DATA IN THE SERVER  //
+
 void initServerData(char *env, int winsize, int fps)
 {
     env_name = env;
@@ -227,6 +236,10 @@ void printData(int what)
             all_modies[i].printUtil(what);
     }
     printf("\n");
+
+///////////////////////////////////////////////////////////////////////////////////
+
+//  FOR EACH INCOMING COMMUNICATION, THESE FUNCTIONS START A MODI-OBJECT THREADS //
 }
 void *openModiThreads(void *arg)
 {
@@ -265,6 +278,11 @@ void *openObjsThreads(void *arg)
     }
     return NULL;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+//  USED JUST IN DEBUG. GENERATES A SIMPLE MOVEMENT IN EACH CONNECTED ROBOT  //
+
 void easyTest()
 {
     float spd_factor = 2;
@@ -302,6 +320,12 @@ void easyTest()
 
 
 }
+
+//////////////////////////////////////////////////////////////
+
+//  SDL-RELATED FUNCTIONS  //
+
+
 void quit(int rc)
 {
     modi_surf.~surf_wrapper();

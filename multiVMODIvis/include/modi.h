@@ -1,6 +1,7 @@
 #ifndef _MODI_H_
 #define _MODI_H_
 #include "bmap.h"
+#include "comm_utils.h"
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -90,6 +91,12 @@ public:
 
     void setcmd(unsigned char *input);
 
+    void setSocket(int i, modi* ref);
+    int getSocket();
+    void update_act(float ml, float mr, float id);
+    void swait(){sem_wait(&sem);};
+    void spost(){sem_post(&sem);};
+    void sclose(){sem_close(&sem);};
 private:
     // data of the robot (pos, angle, sensors values and speed
     mDataf data;
@@ -120,6 +127,18 @@ private:
 
     // kalman filter values
     double th,ths,thp,thp0,P,Pp,fQR,Q,R,delta_thp,thpp,Kk;
+    float outdata[3];
+
+    char motl;
+    char motr;
+
+    // socket info
+    int sockid;
+
+
+    pthread_t tid;
+    int thrd;
+    sem_t   sem;
 };
 
 static int cm2px(int value)

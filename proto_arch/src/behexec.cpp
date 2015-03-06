@@ -60,10 +60,14 @@ void behexec::initShm(int idx)
 
 void behexec::upd_motor_and_mo_to_shm(float mo)
 {
+    motor tmp;
+    tmp.left = 0.0;
+    tmp.right = 0.0;
     float inmo = mo;
     if(motmosh!=NULL)
     {
         memcpy(&(motmosh->mot),&mot,sizeof(motor));
+        //memcpy(&(motmosh->mot),&tmp,sizeof(motor));
         memcpy(&(motmosh->mo),&inmo,sizeof(float));
     }
 }
@@ -237,7 +241,8 @@ void behexec::f_turn_180()
         hold_behavior = TURN_180;
         s_turn_180.start_angle = rob->pos.a;
         s_turn_180.prev_angle = rob->pos.a;
-        s_turn_180.current_speed = default_speed;
+        ///
+        s_turn_180.current_speed = MIN_SPD;// default_speed;
         s_turn_180.target_angle = (rob->pos.a >= 0)? (rob->pos.a- 180) : (rob->pos.a + 180);
         s_turn_180.cState = 1;
         s_turn_180.sturn = CW;
@@ -604,11 +609,20 @@ void behexec::reset(int modi2detect, int obj2detect)
     mot.right = default_speed;
 
     // s_free_exp structure
+    /*
     s_free_exp.minNoObj = 0.25;
     s_free_exp.minObjLat = 0.25;
     s_free_exp.critObjLat = 0.20;
     s_free_exp.hist_norm = 0.5;
     s_free_exp.hist_crit = 0.10;
+    s_free_exp.cState = 1;
+    */
+
+    s_free_exp.minNoObj = 0.30;
+    s_free_exp.minObjLat = 0.35;
+    s_free_exp.critObjLat = 0.20;
+    s_free_exp.hist_norm = 0.025;
+    s_free_exp.hist_crit = 0.5;
     s_free_exp.cState = 1;
 
     // s_full_stop structure
@@ -626,19 +640,19 @@ void behexec::reset(int modi2detect, int obj2detect)
 
     // wall following
     /*
-    s_wall_follow.minNoObj = 0.25;
-    s_wall_follow.minObjLat = 0.25;
-    s_wall_follow.critObjLat = 0.20;
-    s_wall_follow.hist_norm = 0.5;]
-    s_wall_follow.hist_crit = 0.10;
-    s_wall_follow.cState = 0;
-    s_wall_follow.fcd = 0;
-    */
     s_wall_follow.close_dist = 0.60;
     s_wall_follow.direction = CW;
     s_wall_follow.crit_dist = 0.15;
     s_wall_follow.prev_dist = 2*DEFAULT_RANGE;
     s_wall_follow.recover_wall = 0;
+    */
+    s_wall_follow.close_dist = 0.40;
+    s_wall_follow.direction = CW;
+    s_wall_follow.crit_dist = 0.25;
+    s_wall_follow.prev_dist = 2*DEFAULT_RANGE;
+    s_wall_follow.recover_wall = 0;
+
+
 
     /* reach object */
     s_reach_obj.cState = 0;

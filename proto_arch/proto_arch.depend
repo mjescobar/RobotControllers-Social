@@ -344,7 +344,7 @@
 1409984577 source:/home/fabianrubilar/Documents/CURRENT_ARCHITECTURE/proto_arch27102014/src/perception.cpp
 	"../include/perception.h"
 
-1414446701 source:/media/Datos/FABIAN/ARCHITECTURE/proto_arch/main.cpp
+1419826752 source:/media/Datos/FABIAN/ARCHITECTURE/proto_arch/main.cpp
 	<iostream>
 	"include/perception.h"
 	"include/motiv.h"
@@ -359,14 +359,14 @@
 	<vector>
 	"defs.h"
 
-1415056695 /media/Datos/FABIAN/ARCHITECTURE/proto_arch/include/defs.h
+1419833050 /media/Datos/FABIAN/ARCHITECTURE/proto_arch/include/defs.h
 	<stdlib.h>
 	<string.h>
 	<sys/types.h>
 	<sys/ipc.h>
 	<sys/shm.h>
 
-1410811991 /media/Datos/FABIAN/ARCHITECTURE/proto_arch/include/motiv.h
+1418682694 /media/Datos/FABIAN/ARCHITECTURE/proto_arch/include/motiv.h
 	"defs.h"
 
 1410842894 /media/Datos/FABIAN/ARCHITECTURE/proto_arch/include/behaviorsh.h
@@ -376,15 +376,15 @@
 1410857392 /media/Datos/FABIAN/ARCHITECTURE/proto_arch/include/behexec.h
 	"defs.h"
 
-1412106901 source:/media/Datos/FABIAN/ARCHITECTURE/proto_arch/src/behaviorsh.cpp
+1419382325 source:/media/Datos/FABIAN/ARCHITECTURE/proto_arch/src/behaviorsh.cpp
 	"../include/behaviorsh.h"
 	<stdio.h>
 
-1415057000 source:/media/Datos/FABIAN/ARCHITECTURE/proto_arch/src/behexec.cpp
+1419832014 source:/media/Datos/FABIAN/ARCHITECTURE/proto_arch/src/behexec.cpp
 	"../include/behexec.h"
 	<stdio.h>
 
-1413147628 source:/media/Datos/FABIAN/ARCHITECTURE/proto_arch/src/motiv.cpp
+1419193514 source:/media/Datos/FABIAN/ARCHITECTURE/proto_arch/src/motiv.cpp
 	"../include/motiv.h"
 	<stdio.h>
 
@@ -429,5 +429,8 @@
 	<stdio.h>
 
 1417628953 source:/home/fabian/Documentos/ARCHITECTURE/proto_arch/src/perception.cpp
+	"../include/perception.h"
+
+1419826320 source:/media/Datos/FABIAN/ARCHITECTURE/proto_arch/src/perception.cpp
 	"../include/perception.h"
 

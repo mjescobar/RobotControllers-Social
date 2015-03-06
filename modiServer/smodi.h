@@ -3,9 +3,18 @@
 
 #define PI 3.14159265
 
+//#define REAL_PAR      /* used when the real environments (or virtual small) are used */
+#define SIM_PAR         /* used when the virtual environments are used */
+
 /* geometry parameters */
 
+#ifdef REAL_PAR
 #define MODI_DIAMETER       0.078   /* diameter of the modi (7.8 [cm]) */
+#endif
+#ifdef SIM_PAR
+#define MODI_DIAMETER       0.11   /* diameter of the modi (7.8 [cm]) */
+#endif
+
 #define YOFFSET             0       /* offset for the position of the proximity sensors */
 #define ANGLE_BTW_PROXSENS  45.0    /* angle formed between the proximity sensors */
 
@@ -18,7 +27,15 @@
 #define MIN_SENS_DIST       0.05    /* minimum sensing range for the prox. sensors (5[cm]) */
 #define COLLISION_RADIUS    0.07    /* radius, from the center of the robot, of the collision sensors */
 #define DEFAULT_SPEED       PI*0.5  /* default speed of each robot */
-#define DETECTION_RANGE     1.0     /* range for the object/modi detectors */
+
+
+/// DETECTION RANGE MODIFIED!!
+#ifdef SIM_PAR
+#define DETECTION_RANGE     1.5     /* range for the object/modi detectors */
+#endif
+#ifdef REAL_PAR
+#define DETECTION_RANGE     0.6     /* range for the object/modi detectors */
+#endif
 
 /* shared memory keys */
 
@@ -95,9 +112,6 @@ public:
     motor get_data_to_vrep();
     void setMotors(float left, float right);
     void make_available();
-    //void initLogger(char *filename);
-    //void report(bool copy2file, bool verbose);
-    //void setshdata(int key_sens, int key_motor);
 
 private:
     void upd_rotpx();

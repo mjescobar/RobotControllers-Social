@@ -143,8 +143,9 @@ void behaviorsh::load_orientations()
 
     behaviorsMO[REACH_OBJ]      = AP;
     behaviorsMO[FREE_EXP]       = AP;
-    behaviorsMO[MODI_FOLLOW]    = AP;
     behaviorsMO[MORE_SPD]       = AP;
+//  test it! originally, AP
+    behaviorsMO[MODI_FOLLOW]    = AP;
 }
 
 
@@ -194,15 +195,17 @@ void behaviorsh::update(int *e, float MO, int hold_behavior, int reasonedb, int 
             if(e[OBJ_DETECT]&(1<<obj2follow)) act(REACH_OBJ,1.0);
         }
         // when any modi is detected.
-        if(e[MOD_DETECT]) act(FREE_EXP,0.7);
-        if(e[MOD_DETECT]) act(MORE_SPD,0.1);
-        if(e[MOD_DETECT]) act(MODI_FOLLOW,0.05);
+        if(e[MOD_DETECT]) act(FREE_EXP,1.0);
+        if(e[MOD_DETECT]) act(MORE_SPD,0.2);
+        if(e[MOD_DETECT]) act(LESS_SPD,0.1);
+        // by default, the robots will follow to any modi
+        if(e[MOD_DETECT]&&(modi2follow!=NO_MODI)) act(MODI_FOLLOW,0.15);
         // when the detected modi is the right one.
-        if(modi2follow>=0)
+        if(e[MOD_DETECT]&&(modi2follow>=0))
         {
-            if(e[MOD_DETECT]==(1<<modi2follow))
+            if(e[MOD_DETECT]&(1<<modi2follow))
             {
-                act(MODI_FOLLOW,0.2);
+                act(MODI_FOLLOW,0.5);
             }
         }
     }
@@ -238,13 +241,19 @@ void behaviorsh::update(int *e, float MO, int hold_behavior, int reasonedb, int 
             if(e[OBJ_DETECT]&(1<<obj2follow)) act(REACH_OBJ,1.0);
         }
         // when any modi is detected.
-        if(e[MOD_DETECT]) act(MODI_FOLLOW,0.8);
-        if(e[MOD_DETECT]) act(MORE_SPD,1.0);
+        if(e[MOD_DETECT]&&(modi2follow!=NO_MODI)) act(MODI_FOLLOW,0.3);
+        if(e[MOD_DETECT]) act(MORE_SPD,0.2);
+        if(e[MOD_DETECT]) act(FREE_EXP,0.1);
+        /*
+        if(e[MOD_DETECT]&&(modi2follow!=NO_MODI)) act(MODI_FOLLOW,0.8);
+        if(e[MOD_DETECT]) act(MORE_SPD,0.4);
+        if(e[MOD_DETECT]) act(FREE_EXP,0.4);
+        */
         if(e[MOD_DETECT]) act(WALL_FOLLOW,1.0);
         // when the detected modi is the right one.
-        if(modi2follow>=0)
+        if(e[MOD_DETECT]&&(modi2follow>=0))
         {
-            if(e[MOD_DETECT]==(1<<modi2follow))
+            if(e[MOD_DETECT]&(1<<modi2follow))
             {
                 act(MODI_FOLLOW,2.0);
             }

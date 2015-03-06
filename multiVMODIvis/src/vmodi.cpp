@@ -1,10 +1,11 @@
 #include "vmodi.h"
-#include "socket_functions.h"
+#include "comm_utils.h"
 #include <time.h>
 #include <vector>
 
 bmap b1;
 bmap shape;
+bmap oshape;
 
 int fcounter;
 
@@ -14,6 +15,7 @@ bool insflag = true;
 
 #ifdef DO_COMM
 unsigned char nomov[4] = {0x02,0x01,0x00,0x00};
+unsigned char testt[4] = {0x02,0x01,0x64,0x64};
 
 // show the received data in the xbee module
 void myCB(struct xbee *xbee, struct xbee_con *con, struct xbee_pkt **pkt, void **data)
@@ -28,8 +30,14 @@ void myCB(struct xbee *xbee, struct xbee_con *con, struct xbee_pkt **pkt, void *
 // to be used within a process
 void *sendcommand(void *arg)
 {
+    //printf("check");
     for(int i = 0; i < (int) modinum; i++)
+    {
         ret = xbee_connTx(connections[i], NULL, instructions[i],4);
+        //ret = xbee_connTx(connections[i], NULL, testt,4);
+        //printf("%d, ",i);
+    }
+    printf("\n");
     return NULL;
 }
 #endif // DO_COMMqq
@@ -39,10 +47,9 @@ int main(int argc, char **argv)
     printf("starting!\n");
     int dummy = 1;
     glutInit(&dummy,NULL);
-    init((char *) "Data/config.txt",NULL);
+    init((char *) "Data/config.txt",(char *) "Data/configobj.txt",NULL);
 
     fcounter = -1;
-
     arVideoCapStart();
     argMainLoop( NULL, keyEvent, mainLoop );
 
@@ -63,7 +70,11 @@ static void keyEvent( unsigned char key, int x, int y)
             ret = xbee_connTx(connections[i], NULL, nomov,4);
         #endif // DO_COMM
         printf("*** %f (frame/sec)\n", (double)count/arUtilTimer());
-        stop_server();
+        for(int q= 0; q < modinum; q++)
+        {
+            stop_server(modies[q].getSocket());
+        }
+        shutdown_flag = true;
         cleanup();
         exit(0);
     }
@@ -74,8 +85,6 @@ static void keyEvent( unsigned char key, int x, int y)
         {
             for(int i = 0; i < (int) modinum; i++)
                 modies[i].initTraceLogger(i);
-
-            send_msg((char*)"start");
         }
         else
         {
@@ -128,7 +137,13 @@ static void mainLoop(void)
             shape.overlaySqFloating(b1,(int)modies[q].getpos().x, (int) modies[q].getpos().y);
         }
     }
-
+    for(q= 0; q < objnum; q++)
+    {
+        if(objects[q].isVisible())
+        {
+            oshape.overlaySqFloating(b1,(int)objects[q].getpos().x, (int) objects[q].getpos().y);
+        }
+    }
 
     // virtual sensors section: updating and drawing
     #ifdef USE_SENSORS
@@ -187,29 +202,58 @@ static void mainLoop(void)
             */
             modies[i].updateAngle(object_angle(patt_trans1,marker_info[cPattIndex].pos));
             // this ensures the correct reception of the command ((FRAMES_PER_COM-1) frames in advanced)
-            if(cont==FRAMES_PER_COM-2) modies[i].updateshdata(true);
-            else modies[i].updateshdata(false);
+            //if(cont==FRAMES_PER_COM-2) modies[i].updateshdata(true);
+            //else modies[i].updateshdata(false);
+        }
+    }
+    for(int i = 0; i < (int) objnum; i++)
+    {
+        objects[i].setKidx(-1);
+        for( j = 0; j < marker_num; j++ )
+        {
+            if( objects[i].getPattid() == marker_info[j].id )	if( objects[i].getKidx() == -1 ) objects[i].setKidx(j);
+        }
+        /* get the transformation between the marker and the real camera */
+        if(objects[i].isVisible())
+        {
+            int cPattIndex = objects[i].getKidx();
+            arGetTransMat(&marker_info[cPattIndex], patt_center, patt_width, patt_trans1);
+            /* updating position and angle */
+            int xpos = (int) round(marker_info[cPattIndex].pos[0]);
+            int ypos = (int) round(marker_info[cPattIndex].pos[1]);
+            objects[i].setpos(xpos,ypos,marker_info[cPattIndex].cf);
+            objects[i].updateAngle(object_angle(patt_trans1,marker_info[cPattIndex].pos));
         }
     }
 
     /* every FRAMES_PER_COM frames, a control signal is sent to the robot. or instead, the value of the virtual sensors */
+    //printf("start comm\n");
     if(cont==FRAMES_PER_COM)
     {
+
         #ifdef DO_COMM
         for(int i = 0; i < (int) modinum; i++)
         {
+            //printf("%d,%d,%d,%d\n",(instructions[i])[0],(instructions[i])[1],(instructions[i])[2],(instructions[i])[3]);
             modies[i].setcmd(instructions[i]);
         }
         if(pthread_create(&commthread, NULL,sendcommand,NULL)) fprintf(stderr, "Error creating thread\n");
         #endif // DO_COMM
+
         #ifdef DO_REPORT
         for(int i = 0; i < (int) modinum; i++)  modies[i].report(true);
         printf("\n");
         #endif // DO_REPORT
+        cont = 0;
     }
+    //printf("end comm\n");
     cont++;
-    for(int i = 0; i < (int) modinum; i++)  modies[i].report(false);
-    cont = 0;
+    //printf("%d,%d\n",cont,FRAMES_PER_COM);
+    for(int i = 0; i < (int) modinum; i++)
+    {
+      // modies[i].report(false);
+       modies[i].spost();
+    }
     argSwapBuffers();
     if(fcounter != -1) printf(" fc%4d\n",fcounter);
     if(fcounter>0) fcounter--;
@@ -220,7 +264,7 @@ static void mainLoop(void)
     }
 }
 
-static void init( char * infilename, char *outfilename )
+static void init( char * infilename, char * objfilename, char *outfilename )
 {
     time_spent = 0;
     /* setup of ARToolkit */
@@ -243,11 +287,20 @@ static void init( char * infilename, char *outfilename )
         printf("modinum: %d error! exiting...\n",modinum);
         exit(0);
     }
+    if(readObjConfig(objfilename)<0)
+    {
+        printf("objnum: %d error! exiting...\n",modinum);
+        exit(0);
+    }
     // setup of Modi and virtual representation
     for(int i = 0; i < modinum; i++)
     {
         modies[i] = modi(0,cm2px(2),cm2px(50),arLoadPatt(patterns[i].c_str())); // 50 cm sensor range
-        modies[i].setshdata(32000+i,32000+i+MAXMODIES);
+        //modies[i].setshdata(32000+i,32000+i+MAXMODIES);
+    }
+    for(int i = 0; i < objnum; i++)
+    {
+        objects[i] = object(arLoadPatt(obj_patterns[i].c_str()));
     }
     for(int i = 0; i < modinum; i++)
     {
@@ -261,13 +314,15 @@ static void init( char * infilename, char *outfilename )
         else sprintf(logfilename,"logmove_modi%02d.txt",i);
         modies[i].initLogger(logfilename);
         instructions[i] = (unsigned char*) malloc(sizeof(unsigned char)*4);
+        memset(instructions[i],0x00,sizeof(unsigned char)*4);
     }
-    printf("%d MODIes were created.\n",(int)modinum);
+    printf("%d MODIes and %d objects were created.\n",(int)modinum, (int) objnum);
 
     // change here if you want to change the position of the scenario in the screen
     b1 = bmap(scenario,10,40,image_width,image_height);
     b1.clearWorking();
     shape = bmap(modishape,image_width,image_height,image_width,image_height);
+    oshape = bmap(objshape,image_width,image_height,image_width,image_height);
 
     pframe = (unsigned char *) malloc(sizeof(unsigned char)*b1.getFramesize());
 
@@ -279,7 +334,7 @@ static void init( char * infilename, char *outfilename )
     cont = 0;
 
 #ifdef DO_COMM
-    printf("reach state");
+    printf("reach state\n");
     fflush(stdin);
     if ((ret = xbee_setup(&xbee, "xbeeZB", "/dev/ttyUSB0", 57600)) != XBEE_ENONE) xbee_errorToStr(ret);
     for(int i = 0; i < modinum; i++)
@@ -288,11 +343,19 @@ static void init( char * infilename, char *outfilename )
         if ((ret = xbee_conCallbackSet(connections[i], myCB, NULL)) != XBEE_ENONE) xbee_errorToStr(ret);
         ret = xbee_connTx(connections[i], NULL, nomov,4);
     }
-#endif
-    printf("starting server... ");
+#endif // DO_COMM
+    printf("starting tcp clients... \n");
     fflush(stdin);
-    start_server();
-    printf("done\n");
+    for(int i = 0; i < modinum; i++)
+    {
+        modies[i].setSocket(simpleSocket(PORTNUMBER),&modies[i]);
+    }
+    for(int i = 0; i < objnum; i++)
+    {
+        objects[i].setSocket(simpleSocket(PORTNUMBER+1),&objects[i]);
+    }
+    shutdown_flag = false;
+    printf("init finished\n");
 }
 /* cleanup function called when program exits */
 static void cleanup(void)

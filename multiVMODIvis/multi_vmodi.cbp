@@ -34,12 +34,14 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="include/bmap.h" />
+		<Unit filename="include/comm_utils.h" />
 		<Unit filename="include/modi.h" />
-		<Unit filename="include/socket_functions.h" />
+		<Unit filename="include/object.h" />
 		<Unit filename="include/vmodi.h" />
 		<Unit filename="src/bmap.cpp" />
+		<Unit filename="src/comm_utils.cpp" />
 		<Unit filename="src/modi.cpp" />
-		<Unit filename="src/socket_functions.cpp" />
+		<Unit filename="src/object.cpp" />
 		<Unit filename="src/vmodi.cpp" />
 		<Extensions>
 			<envvars />

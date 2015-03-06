@@ -6,6 +6,12 @@
 #define FRM_FLAG 1
 #define COM_FLAG 2
 
+
+/*
+    all the functions of this file are related with the smodi object.
+    each name is self-explanatory.
+*/
+
 void setval(pta *pt, float x, float y, float a = 0.0)
 {
     pt->x = x;
@@ -134,6 +140,7 @@ void smodi::init(int idx,pta scale,SDL_Rect bg)
         perror("shmat");
         exit(1);
     }
+    memset(sh_data_to_vrep,sizeof(motor_and_mo),0);
     pfile = NULL;
     data_to_control.id = idx;
     float da = 360.0/(NCSENS*3);
@@ -173,6 +180,7 @@ pta smodi::get_pos()
 
 void smodi::upd_distances_to_modies(smodi *modi_arr, surf_wrapper *bg)
 {
+    float detection_rng = DETECTION_RANGE;
     for(int i=0; i<MAX_MODIES; i++)
     {
         if(!modi_arr[i].isEmpty()&&i!=data_to_control.id)
@@ -182,9 +190,9 @@ void smodi::upd_distances_to_modies(smodi *modi_arr, surf_wrapper *bg)
             float dx = cpos.x-mpos.x;
             float dy = cpos.y-mpos.y;
             float mag = sqrt(dx*dx+dy*dy);
-            if(mag>DETECTION_RANGE)
+            if(mag>detection_rng)
             {
-                data_to_control.m_pos[i].m = -1.0*DETECTION_RANGE;
+                data_to_control.m_pos[i].m = -1.0*detection_rng;
                 continue;
             }
             float ang = valid_angle(180*atan2(dx,dy)/PI-mpos.a);
@@ -201,12 +209,13 @@ void smodi::upd_distances_to_modies(smodi *modi_arr, surf_wrapper *bg)
                 data_to_control.m_pos[i].a = ang;
             }
         }
-        else  data_to_control.m_pos[i].m = -1.0*DETECTION_RANGE;
+        else  data_to_control.m_pos[i].m = -1.0*detection_rng;
     }
 }
 
 void smodi::upd_distances_to_objects(mData *obj_arr, surf_wrapper *bg)
 {
+    float detection_rng = DETECTION_RANGE/2;
     for(int i=0; i<MAX_OBJECTS; i++)
     {
         if(obj_arr[i].id>=0)
@@ -215,9 +224,9 @@ void smodi::upd_distances_to_objects(mData *obj_arr, surf_wrapper *bg)
             float dx = obj_arr[i].pos.x-mpos.x;
             float dy = obj_arr[i].pos.y-mpos.y;
             float mag = sqrt(dx*dx+dy*dy);
-            if(mag>DETECTION_RANGE)
+            if(mag>detection_rng)
             {
-                data_to_control.o_pos[i].m = -1.0*DETECTION_RANGE;
+                data_to_control.o_pos[i].m = -1.0*detection_rng;
                 continue;
             }
             float ang = valid_angle(180*atan2(dx,dy)/PI-mpos.a);
@@ -235,7 +244,7 @@ void smodi::upd_distances_to_objects(mData *obj_arr, surf_wrapper *bg)
                 data_to_control.o_pos[i].a = ang;
             }
         }
-        else  data_to_control.o_pos[i].m = -1.0*DETECTION_RANGE;
+        else  data_to_control.o_pos[i].m = -1.0*detection_rng;
     }
 
 }

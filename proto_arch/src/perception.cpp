@@ -69,6 +69,11 @@ void perception::update(float MO)
     float TOUC_APOBJD = 0.08;     /*threshold approach object touched */
     float NEAR_AVOBJD = 0.80;    /*threshold avoidance object near */
     float TOUC_AVOBJD = 0.12;     /*threshold avoidance object touched */
+    float NEAR_APMODI = 0.80;    /*threshold avoidance object near */
+    float NEAR_AVMODI = 0.80;    /*threshold avoidance object near */
+    /// added on 26 december
+    float TOUC_APMODI = 0.12;     /*threshold avoidance object touched */
+    float TOUC_AVMODI = 0.18;     /*threshold avoidance object touched */
 
     /* APPROACH BEHAVIOR */
     if(mo_bias>0)
@@ -97,9 +102,9 @@ void perception::update(float MO)
         /* modies detection or touch */
         for(int i=0; i< MAX_MODIES; i++)
         {
-            if((inref->m_pos[i].m<NEAR_APOBJD)&&(inref->m_pos[i].m>=0))
+            if((inref->m_pos[i].m<NEAR_APMODI)&&(inref->m_pos[i].m>=0))
             {
-                if(inref->m_pos[i].m<TOUC_APOBJD) events_act[MOD_TOUCH] = 1<<i;
+                if(inref->m_pos[i].m<TOUC_APMODI) events_act[MOD_TOUCH] = 1<<i;
                 else events_act[MOD_DETECT] = 1<<i;
             }
         }
@@ -121,18 +126,18 @@ void perception::update(float MO)
         /* object detection or touch */
         for(int i=0; i< MAX_OBJECTS; i++)
         {
-            if((inref->o_pos[i].m<NEAR_APOBJD)&&(inref->o_pos[i].m>=0))
+            if((inref->o_pos[i].m<NEAR_AVOBJD)&&(inref->o_pos[i].m>=0))
             {
-                if(inref->o_pos[i].m<TOUC_APOBJD) events_act[OBJ_TOUCH] = events_act[OBJ_TOUCH] + (1<<i);
+                if(inref->o_pos[i].m<TOUC_AVOBJD) events_act[OBJ_TOUCH] = events_act[OBJ_TOUCH] + (1<<i);
                 else events_act[OBJ_DETECT] = events_act[OBJ_DETECT] + (1<<i);
             }
         }
         /* modies detection or touch */
         for(int i=0; i< MAX_MODIES; i++)
         {
-            if((inref->m_pos[i].m<NEAR_AVOBJD)&&(inref->m_pos[i].m>=0))
+            if((inref->m_pos[i].m<NEAR_AVMODI)&&(inref->m_pos[i].m>=0))
             {
-                if(inref->m_pos[i].m<TOUC_AVOBJD) events_act[MOD_TOUCH] = events_act[MOD_TOUCH] + (1<<i);
+                if(inref->m_pos[i].m<TOUC_AVMODI) events_act[MOD_TOUCH] = events_act[MOD_TOUCH] + (1<<i);
                 else events_act[MOD_DETECT] = events_act[MOD_DETECT] + (1<<i);
             }
         }
@@ -149,13 +154,15 @@ void perception::update(float MO)
 
     // update external orientation value
     float tmpEO = 0;
-    float mcount = EPSIL;
+    //float mcount = EPSIL;
+    // change realized at 16/12/2014 -- mcount has the amount of robots present in the trial, less one (self)
+    float mcount = 2;
     for(int i=0; i< MAX_MODIES; i++)
     {
         if((inref->m_pos[i].m<NEAR_AVOBJD)&&(inref->m_pos[i].m>=0))
         {
             tmpEO = tmpEO + inref->mo_sur[i];
-            mcount = mcount + 1;
+            //mcount = mcount + 1;
         }
     }
     EO = tmpEO/mcount;

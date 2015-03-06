@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="include/behaviorsh.h" open="0" top="0" tabpos="9">
-		<Cursor position="317" topLine="0" />
+	<File name="include/behaviorsh.h" open="0" top="0" tabpos="5">
+		<Cursor position="368" topLine="0" />
 	</File>
-	<File name="include/behexec.h" open="1" top="0" tabpos="4">
-		<Cursor position="1608" topLine="54" />
+	<File name="include/behexec.h" open="0" top="0" tabpos="4">
+		<Cursor position="1608" topLine="12" />
 	</File>
-	<File name="include/defs.h" open="1" top="0" tabpos="2">
-		<Cursor position="2777" topLine="53" />
+	<File name="include/defs.h" open="0" top="0" tabpos="2">
+		<Cursor position="1809" topLine="0" />
 	</File>
-	<File name="include/motiv.h" open="0" top="0" tabpos="3">
-		<Cursor position="279" topLine="0" />
+	<File name="include/motiv.h" open="0" top="0" tabpos="4">
+		<Cursor position="558" topLine="0" />
 	</File>
-	<File name="include/perception.h" open="0" top="0" tabpos="4">
-		<Cursor position="0" topLine="0" />
+	<File name="include/perception.h" open="0" top="0" tabpos="6">
+		<Cursor position="496" topLine="0" />
 	</File>
-	<File name="main.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="8164" topLine="247" />
+	<File name="main.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="8298" topLine="211" />
 	</File>
-	<File name="src/behaviorsh.cpp" open="1" top="0" tabpos="7">
-		<Cursor position="5623" topLine="231" />
+	<File name="src/behaviorsh.cpp" open="0" top="0" tabpos="6">
+		<Cursor position="5772" topLine="24" />
 	</File>
-	<File name="src/behexec.cpp" open="1" top="1" tabpos="5">
-		<Cursor position="11204" topLine="354" />
+	<File name="src/behexec.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="18698" topLine="605" />
 	</File>
-	<File name="src/motiv.cpp" open="1" top="0" tabpos="6">
-		<Cursor position="547" topLine="0" />
+	<File name="src/motiv.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="2126" topLine="30" />
 	</File>
-	<File name="src/perception.cpp" open="1" top="0" tabpos="3">
-		<Cursor position="5231" topLine="118" />
+	<File name="src/perception.cpp" open="0" top="0" tabpos="3">
+		<Cursor position="5411" topLine="120" />
 	</File>
 </CodeBlocks_layout_file>

@@ -32,6 +32,8 @@ int main(int argc, char** argv)
 
     initServerData(env_filename,atoi(screen_size),atoi(frames_per_sec));
 
+    /* each thread is responsible of a certain task. See serverData.cpp for each implementation */
+
     int th1 = pthread_create(&tid,NULL,dataMonitor,NULL);
     int th2 = pthread_create(&tid,NULL,SDL_thread,NULL);
     int th3 = pthread_create(&tid,NULL,openModiThreads,NULL);

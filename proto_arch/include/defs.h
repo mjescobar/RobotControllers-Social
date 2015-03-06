@@ -13,9 +13,10 @@
 
 /* geometry parameters */
 
-#define MODI_DIAMETER       0.078   /* diameter of the modi (7.8 [cm]) */
+//#define MODI_DIAMETER       0.078   /* diameter of the modi (7.8 [cm]) */
+#define MODI_DIAMETER       0.11   /* diameter of the modi (7.8 [cm]) */
 #define YOFFSET             0       /* offset for the position of the proximity sensors */
-#define ANGLE_BTW_PROXSENS  30.0    /* angle formed between the proximity sensors */
+#define ANGLE_BTW_PROXSENS  45.0    /* angle formed between the proximity sensors */
 
 /* sensors parameters */
 
@@ -24,15 +25,16 @@
 #define MAX_MODIES          5       /* maximum amount of modies in the scene */
 #define DEFAULT_RANGE       1.0     /* default range for the proximity sensors (100[cm]) */
 #define MIN_SENS_DIST       0.05    /* minimum sensing range for the prox. sensors (5[cm]) */
-#define COLLISION_RADIUS    0.07    /* radius, from the center of the robot, of the collision sensors */
-#define DEFAULT_SPEED       2*PI    /* default speed of each robot */
-#define DETECTION_RANGE     1.0     /* range for the object/modi detectors */
+#define COLLISION_RADIUS    0.11    /* radius, from the center of the robot, of the collision sensors */
+#define DEFAULT_SPEED       1.15*PI    /* default speed of each robot */
+#define DETECTION_RANGE     0.4     /* range for the object/modi detectors */
 
 #define NEAR_DIST   DEFAULT_RANGE                   /* a distance considered as "near", i.e, within the range of the proximity sensors */
 #define FAR_DIST    DETECTION_RANGE                 /* distance to consider that a modi/object is far from something */
-#define COL_DIST    COLLISION_RADIUS+MODI_DIAMETER  /* distance to consider that a modi/object is touching something */
-#define MODI_FOLLOW_DIST 0.3                        /* optimal distance to follow a modi/wall */
-#define WALL_FOLLOW_DIST 0.3
+//#define COL_DIST    COLLISION_RADIUS+MODI_DIAMETER  /* distance to consider that a modi/object is touching something */
+#define COL_DIST    COLLISION_RADIUS                /* distance to consider that a modi/object is touching something */
+#define MODI_FOLLOW_DIST 0.2                        /* optimal distance to follow a modi/wall */
+#define WALL_FOLLOW_DIST 0.25
 
 /* shared memory keys */
 
@@ -80,19 +82,26 @@
 #define M_W2 1
 #define M_W3 2
 #define M_W4 3
+
+#define M_WRO 3
+#define M_WMO 0
+#define M_WBF 1
+#define M_WEO 2
+
 #define M_RO 1
 #define M_BF 2
 #define M_MO 0
 #define M_EO 3
 
 // behavior execution defines
-#define MAX_SPD     1.5*DEFAULT_SPEED
+#define MAX_SPD     1.15*DEFAULT_SPEED
 #define KEEP_SPD    500
 #define DEF_SPD     DEFAULT_SPEED
-#define MIN_SPD     0.5*DEFAULT_SPEED   /* useful when you need a nonzero minimum speed */
+///
+#define MIN_SPD     0.7*DEFAULT_SPEED   /* useful when you need a nonzero minimum speed */
 #define DEF_DELTA   0.05*DEFAULT_SPEED
 
-#define ANGLE_ERROR 6
+#define ANGLE_ERROR 15
 #define CW 1
 #define CCW 0
 
